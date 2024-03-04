@@ -6,27 +6,28 @@
 	/// </summary>
 	public class Logger
 	{
-		private static Logger? _instance;
+		//Lazy<T>
+		private static readonly Lazy<Logger> _lazyLogger = new Lazy<Logger>(() => new Logger());
+
+		//private static Logger? _instance;
 
 		public static Logger Instance
 		{
 			get
 			{
-				//lazy instatiation
-				if (_instance is null)
-				{
-					_instance = new Logger();
-				}
+				return _lazyLogger.Value;
 
-				return _instance;
+				//if (_instance is null)
+				//{
+				//	_instance = new Logger();
+				//}
+
+				//return _instance;
 			}
 		}
 
 		// Protected Constructor so the class cannot be instantiated but it can be subclassed.
-		protected Logger()
-		{
-
-		}
+		protected Logger() { }
 
 		/// <summary>
 		/// Singleton Operation
