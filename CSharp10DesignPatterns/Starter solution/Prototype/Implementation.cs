@@ -1,4 +1,6 @@
-﻿namespace Prototype
+﻿using System.Runtime.Serialization.Formatters.Binary;
+
+namespace Prototype
 {
 	/// <summary>
 	/// Prototype
@@ -7,7 +9,7 @@
 	{
 		public abstract string Name { get; set; }
 
-		public abstract Person Clone();
+		public abstract Person Clone(bool deepClone);
 	}
 
 	/// <summary>
@@ -22,7 +24,7 @@
 			Name = name;
 		}
 
-		public override Person Clone()
+		public override Person Clone(bool deepClone = false)
 		{
 			return (Person)MemberwiseClone();
 		}
@@ -42,8 +44,20 @@
 			Manager = manager;
 		}
 
-		public override Person Clone()
+		public override Person Clone(bool deepClone = false)
 		{
+			if (deepClone)
+			{
+				// Be aware that the BinaryFormatter is NOT secure.
+				// More info here: https://aka.ms/binaryformatter
+				BinaryFormatter binaryFormatter = new();
+				using (MemoryStream memoryStream = new())
+				{
+					binaryFormatter.Serialize(memoryStream, this);
+					memoryStream.Seek(0, SeekOrigin.Begin);
+					return (Person)binaryFormatter.Deserialize(memoryStream);
+				}
+			}
 			return (Person)MemberwiseClone();
 		}
 	}
