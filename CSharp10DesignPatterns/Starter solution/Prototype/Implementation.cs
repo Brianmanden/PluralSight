@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Text.Json;
 
 namespace Prototype
 {
@@ -26,6 +26,12 @@ namespace Prototype
 
 		public override Person Clone(bool deepClone = false)
 		{
+			if (deepClone)
+			{
+				string objectAsJson = JsonSerializer.Serialize(this);
+				return JsonSerializer.Deserialize<Manager>(objectAsJson);
+			}
+
 			return (Person)MemberwiseClone();
 		}
 	}
@@ -46,18 +52,25 @@ namespace Prototype
 
 		public override Person Clone(bool deepClone = false)
 		{
+			//if (deepClone)
+			//{
+			//	// Be aware that the BinaryFormatter is NOT secure.
+			//	// More info here: https://aka.ms/binaryformatter
+			//	BinaryFormatter binaryFormatter = new();
+			//	using (MemoryStream memoryStream = new())
+			//	{
+			//		binaryFormatter.Serialize(memoryStream, this);
+			//		memoryStream.Seek(0, SeekOrigin.Begin);
+			//		return (Person)binaryFormatter.Deserialize(memoryStream);
+			//	}
+			//}
+
 			if (deepClone)
 			{
-				// Be aware that the BinaryFormatter is NOT secure.
-				// More info here: https://aka.ms/binaryformatter
-				BinaryFormatter binaryFormatter = new();
-				using (MemoryStream memoryStream = new())
-				{
-					binaryFormatter.Serialize(memoryStream, this);
-					memoryStream.Seek(0, SeekOrigin.Begin);
-					return (Person)binaryFormatter.Deserialize(memoryStream);
-				}
+				string objectAsJson = JsonSerializer.Serialize(this);
+				return JsonSerializer.Deserialize<Employee>(objectAsJson);
 			}
+
 			return (Person)MemberwiseClone();
 		}
 	}
