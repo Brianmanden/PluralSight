@@ -7,7 +7,7 @@ Console.Title = "Adapter";
 ICityAdapter adapter = new CityAdapter();
 City city = adapter.GetCity();
 
-Console.WriteLine($"{city.FullName}, {city.Inhabitants}");
+Console.WriteLine($"{city.FullName}, {city.Inhabitants}, {city.GetType().FullName}");
 
 Console.WriteLine(Environment.NewLine + "Press any key to terminate program.");
 Console.ReadKey();
