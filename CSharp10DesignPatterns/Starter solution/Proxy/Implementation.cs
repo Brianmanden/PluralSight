@@ -45,22 +45,50 @@
 
 	public class DocumentProxy : IDocument
 	{
-		private Document? _document;
+		// avoid creating document until we need it
+		private Lazy<Document> _document;
 		private string _fileName;
 
 		public DocumentProxy(string fileName)
 		{
 			_fileName = fileName;
+			_document = new Lazy<Document>(() => new(_fileName));
 		}
 
 		public void DisplayDocument()
 		{
-			if (_document == null)
+			_document.Value.DisplayDocument();
+		}
+	}
+
+	/// <summary>
+	/// Proxy
+	/// </summary>
+	public class ProtectedDocumentProxy : IDocument
+	{
+		private string _fileName;
+		private string _userRole;
+		private DocumentProxy _documentProxy;
+
+		public ProtectedDocumentProxy(string fileName, string userRole)
+		{
+			_fileName = fileName;
+			_userRole = userRole;
+			_documentProxy = new(_fileName);
+		}
+
+		public void DisplayDocument()
+		{
+			Console.WriteLine($"Entering DisplayDocument in {nameof(ProtectedDocumentProxy)}.");
+
+			if (_userRole != "Viewer")
 			{
-				_document = new(_fileName);
+				throw new UnauthorizedAccessException();
 			}
 
-			_document.DisplayDocument();
+			_documentProxy.DisplayDocument();
+
+			Console.WriteLine($"Exiting DisplayDocument in {nameof(ProtectedDocumentProxy)}.");
 		}
 	}
 }
