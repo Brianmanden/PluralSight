@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 
-using Newtonsoft.Json;
-
+using StockAnalyzer.Core;
 using StockAnalyzer.Core.Domain;
 
 namespace StockAnalyzer.Windows;
@@ -27,14 +26,16 @@ public partial class MainWindow : Window
 	{
 		BeforeLoadingStockData();
 
-		using (HttpClient client = new())
+		try
 		{
-			Task<HttpResponseMessage> responseTask = client.GetAsync($"{API_URL}/{StockIdentifier.Text}");
-			HttpResponseMessage response = await responseTask;
-			string content = await response.Content.ReadAsStringAsync();
+			DataStore store = new DataStore();
+			Task<IList<StockPrice>> responseTask = store.GetStockPrices(StockIdentifier.Text);
 
-			IEnumerable<StockPrice> data = JsonConvert.DeserializeObject<IEnumerable<StockPrice>>(content)!;
-			Stocks.ItemsSource = data;
+			Stocks.ItemsSource = await responseTask;
+		}
+		catch (Exception ex)
+		{
+			Notes.Text = ex.Message;
 		}
 
 		AfterLoadingStockData();
