@@ -20,12 +20,26 @@ public partial class MainWindow : Window
 		InitializeComponent();
 	}
 
-
-
 	private async void Search_Click(object sender, RoutedEventArgs e)
 	{
-		BeforeLoadingStockData();
+		try
+		{
+			BeforeLoadingStockData();
 
+			await GetStocks();
+		}
+		catch (Exception ex)
+		{
+			Notes.Text = ex.Message;
+		}
+		finally
+		{
+			AfterLoadingStockData();
+		}
+	}
+
+	private async Task GetStocks()
+	{
 		try
 		{
 			DataStore store = new DataStore();
@@ -37,11 +51,7 @@ public partial class MainWindow : Window
 		{
 			Notes.Text = ex.Message;
 		}
-
-		AfterLoadingStockData();
 	}
-
-
 
 	private void BeforeLoadingStockData()
 	{
